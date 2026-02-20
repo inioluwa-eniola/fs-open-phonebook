@@ -40,9 +40,13 @@ const App = () => {
     })
     .catch(error => {
       console.log(error)
-      setMessage({...message, status: `There is an error and the operation does not succeed` } )
+      setMessage(prev => ({
+        ...prev,
+        status: 'There is an error and the operation does not succeed'
+      }))
+
     });
-  }, [persons]);
+  }, []);
 
   function addPerson(event) {
     event.preventDefault();
@@ -58,7 +62,11 @@ const App = () => {
     if (!nameExists) {
       people.create(newPerson).then((returnedPerson) => {
         setPersons(persons.concat(returnedPerson));
-        setMessage({ ...message, status:`Added ${returnedPerson.name}`, style: successMessageStyle })
+        setMessage(prev => ({
+          ...prev,
+          status:`Added ${returnedPerson.name}`, 
+          style: successMessageStyle 
+        }))
         setTimeout(() => setMessage({ ...message, status: null}), 5000)
       });
     }
@@ -70,6 +78,12 @@ const App = () => {
       const existingPerson = persons.find(
         (person) => person.name.toLowerCase() === newName.toLowerCase(),
       );
+
+      if (!existingPerson) {
+        console.log('person not found in state')
+        return 
+      }
+
       const id = existingPerson.id;
       const changedPerson = { ...existingPerson, number: `${newNumber}` };
 
@@ -78,13 +92,18 @@ const App = () => {
           `${newName} is already added to the phonebook, replace the old number with a new one?`,
         )
       ) {
+        
         people.update(id, changedPerson).then((returnedPerson) => {
           setPersons(
             persons.map((person) =>
               person.id === id ? returnedPerson : person,
             ),
           )
-          setMessage({ ...message, status: `Information of ${newName} has been updated`, style: successMessageStyle});
+          setMessage(prev => ({
+            ...prev,
+            status: `Information of ${newName} has been updated`,
+            style: successMessageStyle
+          }))
           setTimeout(() => setMessage({ ...message, status: null}), 5000)
         });
       }
@@ -102,9 +121,16 @@ const App = () => {
 
   function handleDelete(id, name) {
     if (window.confirm(`Delete ${name}?`)) {
-      people.remove(id);
-      setMessage({ ...message, status: `INformation of ${name} has been removed from server`, style: failureMessageStyle})
-      setTimeout(() => setMessage({ ...message, status: null}), 5000)
+      people.remove(id)
+        .then(() => {
+          setPersons(persons.filter(person => person.id !== id))
+          setMessage(prev => ({
+            ...prev,
+            status: `Information of ${name} has been removed from server`, 
+            style: failureMessageStyle,
+          }))
+          setTimeout(() => setMessage({ ...message, status: null}), 5000)
+        })
     } 
   }
 

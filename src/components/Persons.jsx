@@ -8,7 +8,7 @@ const Persons = ({ personsToShow, handleDelete }) => {
             {personsToShow.map((person) => (
                 <div className="name">
                     <Person key={person.name} person={person} />
-                    <DeleteBtn handleDelete={() => handleDelete(person.id, person.name)}/>
+                    <DeleteBtn person={person} handleDelete={() => handleDelete(person.id, person.name)}/>
                 </div>
             ))}
         </ol>

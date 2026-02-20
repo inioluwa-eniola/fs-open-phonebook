@@ -1,6 +1,6 @@
-const DeleteBtn = ({ handleDelete }) => {
+const DeleteBtn = ({ handleDelete, person }) => {
     return(
-        <button onClick={() => handleDelete()}>Delete</button>
+        <button onClick={() => handleDelete(person.id, person.name)}>Delete</button>
     )
 }
 
